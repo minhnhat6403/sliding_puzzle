@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sliding Puzzle Playable Ad</title>
+    <script src="mraid.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #F5E6CC;
+            background-image: url('../assets/background_home_new.webp');
+            background-size: cover;
+            background-position: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #game-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-evenly;
+            padding: 20px 15px;
+        }
+
+        /* Header */
+        .header-img {
+            max-width: 80%;
+            max-height: 18vh;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Puzzle Board Frame (User requested style) */
+        #board-wrapper {
+            background: #D2B48C;
+            border: 2px solid #F6DCB9;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 12px 0 #A0825B, 0 16px 15px rgba(0, 0, 0, 0.2);
+            margin: 10px 0;
+        }
+
+        #board-container {
+            position: relative;
+            width: 80vmin;
+            max-width: 350px;
+            height: 80vmin;
+            max-height: 350px;
+            background: #8B6B4A;
+            /* Inner dark background for empty space */
+            border: 2px solid #8B6B4A;
+            /* Balance the outer gap with the inner tile gaps */
+            box-sizing: content-box;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .tile {
+            position: absolute;
+            width: 33.333%;
+            height: 33.333%;
+            padding: 2px;
+            transition: transform 0.2s ease-out;
+            cursor: pointer;
+        }
+
+        .tile-inner {
+            width: 100%;
+            height: 100%;
+            background-color: #F3CD94;
+            /* Fallback color */
+            background-image: url('../assets/item_number.webp');
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 2px 2px rgba(255, 255, 255, 0.4);
+
+            /* Show number text */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5B3A29;
+            font-size: 40px;
+            font-weight: 900;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Install Button */
+        .install-btn-wrapper {
+            position: relative;
+            width: 70%; max-width: 260px;
+            height: 12vh; min-height: 60px;
+            cursor: pointer;
+            filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.3));
+            animation: pulse 1.2s infinite alternate;
+            transition: transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .install-btn-wrapper:active {
+            transform: scale(0.95);
+        }
+
+        .install-btn-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: contain;
+        }
+
+        .install-btn-text {
+            position: relative;
+            z-index: 1;
+            font-size: 34px;
+            font-weight: 900;
+            color: #4A2B11;
+            text-shadow: 0 2px 2px rgba(255,255,255,0.6);
+            margin-top: -8px; /* Move text up slightly */
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Tutorial Spotlight effect */
+        #tutorial-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 33.333%;
+            height: 33.333%;
+            pointer-events: none;
+            z-index: 50;
+            transition: transform 0.3s ease;
+        }
+
+        /* End Card */
+        #end-card {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+            transition: opacity 0.6s ease;
+        }
+
+        #end-card.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        canvas#fireworks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #end-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .glow-text {
+            font-size: 3.5rem;
+            color: #fff;
+            text-shadow: 0 0 10px #00f2fe, 0 0 20px #4facfe, 0 0 40px #4facfe;
+            margin-bottom: 40px;
+            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #cta-btn {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.5);
+            animation: ctaBlink 1s infinite alternate;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes ctaBlink {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 10px 20px rgba(245, 87, 108, 0.5);
+            }
+
+            100% {
+                transform: scale(1.08);
+                box-shadow: 0 10px 40px rgba(245, 87, 108, 1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="game-container">
+        <img class="header-img" src="../assets/image.webp" alt="Logo" />
+
+        <div id="board-wrapper">
+            <div id="board-container">
+                <!-- Tiles generated here -->
+                <div id="tutorial-layer"></div>
+            </div>
+        </div>
+
+        <div class="install-btn-wrapper" onclick="handleCTAClick()">
+            <img class="install-btn-bg" src="../assets/btn_install.webp" alt="" />
+            <span class="install-btn-text">Install</span>
+        </div>
+    </div>
+
+    <div id="end-card">
+        <canvas id="fireworks"></canvas>
+        <div id="end-content">
+            <h1 class="glow-text">Tuyệt vời!</h1>
+            <button id="cta-btn" onclick="handleCTAClick()">Tải ngay</button>
+        </div>
+    </div>
+
+    <script>
+        // Hybrid SDK
+        let isGameEnd = false;
+        window.gameStart = function () { };
+        window.gameClose = function () { };
+
+        function notifyGameReady() {
+            if (typeof window.gameReady === 'function') window.gameReady();
+        }
+
+        function notifyGameEnd() {
+            if (isGameEnd) return;
+            isGameEnd = true;
+            if (typeof window.gameEnd === 'function') window.gameEnd();
+            showEndCard();
+        }
+
+        function handleCTAClick() {
+            let storeUrl = 'https://play.google.com/store/apps/details?id=com.example.slidingpuzzle';
+            if (typeof window.install === 'function') {
+                window.install();
+            } else if (typeof mraid !== 'undefined' && typeof mraid.open === 'function') {
+                mraid.open(storeUrl);
+            } else {
+                window.open(storeUrl, '_blank');
+            }
+        }
+
+        // Game Logic
+        const boardEl = document.getElementById('board-container');
+        const tutorialEl = document.getElementById('tutorial-layer');
+
+        // Initial state: solvable sliding puzzle designed for the tutorial sequence
+        // 1, 2, 3
+        // 0, 5, 6
+        // 4, 7, 8 -> 4 moves up, then 7 left, then 8 left to win!
+        let state = [1, 2, 3, 0, 5, 6, 4, 7, 8];
+        let tiles = {};
+        let movesMade = 0;
+        let animItem = null;
+
+        function loadTutorialAnim(animName, col, row) {
+            tutorialEl.style.transform = `translate(${col * 100}%, ${row * 100}%)`;
+            if (animItem) {
+                animItem.destroy();
+                animItem = null;
+            }
+            if (animName) {
+                tutorialEl.style.display = 'block';
+                animItem = lottie.loadAnimation({
+                    container: tutorialEl,
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: `../assets/${animName}.json`
+                });
+            } else {
+                tutorialEl.style.display = 'none';
+            }
+        }
+
+        function updateTutorial() {
+            if (movesMade === 0) {
+                // Point to Tile 4 at col 0, row 2
+                loadTutorialAnim('swipe_up', 0, 2);
+            } else if (movesMade === 1) {
+                // Point to Tile 7 at col 1, row 2
+                loadTutorialAnim('swipe_left', 1, 2);
+            } else if (movesMade === 2) {
+                // Point to Tile 8 at col 2, row 2
+                loadTutorialAnim('swipe_left', 2, 2);
+            } else {
+                loadTutorialAnim(null, 0, 0);
+            }
+        }
+
+        function initBoard() {
+            for (let i = 1; i <= 8; i++) {
+                let tile = document.createElement('div');
+                tile.className = 'tile';
+
+                let tileInner = document.createElement('div');
+                tileInner.className = 'tile-inner';
+                tileInner.innerText = i;
+                tile.appendChild(tileInner);
+
+                // Add pointer capture swipe handling to ensure swipe starts ON the tile
+                tile.addEventListener('pointerdown', (e) => {
+                    tile.dataset.startX = e.clientX;
+                    tile.dataset.startY = e.clientY;
+                    tile.setPointerCapture(e.pointerId);
+                });
+
+                tile.addEventListener('pointerup', (e) => {
+                    let startX = tile.dataset.startX;
+                    let startY = tile.dataset.startY;
+                    if (startX === undefined) return;
+                    let dx = e.clientX - startX;
+                    let dy = e.clientY - startY;
+
+                    if (Math.abs(dx) > 30 || Math.abs(dy) > 30) {
+                        let idx = state.indexOf(i);
+                        let emptyIdx = state.indexOf(0);
+
+                        let row = Math.floor(idx / 3);
+                        let col = idx % 3;
+                        let eRow = Math.floor(emptyIdx / 3);
+                        let eCol = emptyIdx % 3;
+
+                        // Check if adjacent to empty cell
+                        if (Math.abs(row - eRow) + Math.abs(col - eCol) === 1) {
+                            let validSwipe = false;
+                            if (eRow < row && dy < -30 && Math.abs(dy) > Math.abs(dx)) validSwipe = true; // swipe up
+                            else if (eRow > row && dy > 30 && Math.abs(dy) > Math.abs(dx)) validSwipe = true; // swipe down
+                            else if (eCol < col && dx < -30 && Math.abs(dx) > Math.abs(dy)) validSwipe = true; // swipe left
+                            else if (eCol > col && dx > 30 && Math.abs(dx) > Math.abs(dy)) validSwipe = true; // swipe right
+
+                            if (validSwipe) {
+                                handleMove(i);
+                            }
+                        }
+                    }
+                    delete tile.dataset.startX;
+                    delete tile.dataset.startY;
+                    tile.releasePointerCapture(e.pointerId);
+                });
+
+                tiles[i] = tile;
+                boardEl.insertBefore(tile, tutorialEl);
+            }
+            renderBoard();
+            updateTutorial();
+            notifyGameReady();
+        }
+
+        function renderBoard() {
+            for (let i = 0; i < 9; i++) {
+                let val = state[i];
+                if (val === 0) continue;
+                let tile = tiles[val];
+                let row = Math.floor(i / 3);
+                let col = i % 3;
+                tile.style.transform = `translate(${col * 100}%, ${row * 100}%)`;
+            }
+        }
+
+        function handleMove(val) {
+            if (isGameEnd) return;
+
+            // Enforce tutorial sequence exactly as the swipe specifies
+            if (movesMade === 0 && val !== 4) return;
+            if (movesMade === 1 && val !== 7) return;
+            if (movesMade === 2 && val !== 8) return;
+
+            let idx = state.indexOf(val);
+            let emptyIdx = state.indexOf(0);
+
+            let row = Math.floor(idx / 3);
+            let col = idx % 3;
+            let eRow = Math.floor(emptyIdx / 3);
+            let eCol = emptyIdx % 3;
+
+            if (Math.abs(row - eRow) + Math.abs(col - eCol) === 1) {
+                state[emptyIdx] = val;
+                state[idx] = 0;
+                movesMade++;
+
+                renderBoard();
+                updateTutorial();
+                checkWin();
+            }
+        }
+
+        function checkWin() {
+            let win = true;
+            for (let i = 0; i < 8; i++) {
+                if (state[i] !== i + 1) {
+                    win = false; break;
+                }
+            }
+            if (win) {
+                isGameEnd = true;
+                
+                // Show 9th tile with a popping animation
+                let tile9 = document.createElement('div');
+                tile9.className = 'tile';
+                tile9.style.opacity = '0';
+                tile9.style.transform = `translate(200%, 200%) scale(0.3)`;
+                tile9.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                
+                let tileInner = document.createElement('div');
+                tileInner.className = 'tile-inner';
+                tileInner.innerText = 9;
+                tile9.appendChild(tileInner);
+                boardEl.appendChild(tile9);
+
+                // Trigger reflow to restart CSS animation
+                void tile9.offsetWidth;
+
+                tile9.style.opacity = '1';
+                tile9.style.transform = `translate(200%, 200%) scale(1)`;
+
+                // Play celebration_confetti.json full screen and scaled up
+                let congratsEl = document.createElement('div');
+                congratsEl.style.position = 'absolute';
+                congratsEl.style.top = '0';
+                congratsEl.style.left = '0';
+                congratsEl.style.width = '100%';
+                congratsEl.style.height = '100%';
+                congratsEl.style.zIndex = '1000';
+                congratsEl.style.pointerEvents = 'none';
+                congratsEl.style.transform = 'scale(1.5)';
+                document.getElementById('game-container').appendChild(congratsEl);
+
+                lottie.loadAnimation({
+                    container: congratsEl,
+                    renderer: 'svg',
+                    loop: false,
+                    autoplay: true,
+                    path: '../assets/celebration_confetti.json'
+                });
+
+                // Auto-redirect to the store after a delay
+                setTimeout(() => {
+                    let storeUrl = 'https://play.google.com/store/apps/details?id=com.slidingpuzzle.numberpuzzle.puzzlegame';
+                    if (typeof mraid !== 'undefined' && typeof mraid.open === 'function') {
+                        mraid.open(storeUrl);
+                    } else {
+                        window.location.href = storeUrl;
+                    }
+                }, 2500);
+            }
+        }
+
+        // Swipe Handling is now bound directly to individual tiles (see initBoard)
+
+        // Background Fireworks - handled if user closes the store or ad is displayed with endcard
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 2;
+                this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
+                this.life = 1.0; this.decay = Math.random() * 0.02 + 0.015;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                this.vy += 0.08; this.life -= this.decay;
+            }
+            draw(ctx) {
+                ctx.globalAlpha = Math.max(0, this.life);
+                ctx.fillStyle = this.color;
+                ctx.beginPath(); ctx.arc(this.x, this.y, 3, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        function createExplosion(x, y) {
+            const colors = ['#f5576c', '#f093fb', '#00f2fe', '#4facfe', '#FFD700', '#00FF00'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            for (let i = 0; i < 40; i++) particles.push(new Particle(x, y, color));
+        }
+
+        function animateFireworks() {
+            if (!isGameEnd) return;
+            requestAnimationFrame(animateFireworks);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (Math.random() < 0.1) createExplosion(Math.random() * canvas.width, Math.random() * canvas.height * 0.6);
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.update(); p.draw(ctx);
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+        }
+
+        function showEndCard() {
+            document.getElementById('end-card').classList.add('visible');
+            animateFireworks();
+        }
+
+        window.onload = initBoard;
+    </script>
+</body>
+
+</html>
