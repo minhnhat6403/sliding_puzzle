@@ -62,7 +62,8 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
         /* Header */
         .header-img {
             max-width: 80%;
-            max-height: 18vh;
+            height: auto;
+            max-height: 20vh;
             object-fit: contain;
             filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
             animation: float 3s ease-in-out infinite;
@@ -94,14 +95,12 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
 
         #board-container {
             position: relative;
-            width: min(85vw, 50vh);
-            height: min(85vw, 50vh);
+            width: min(90vw, 45vh);
+            height: min(90vw, 45vh);
             max-width: 400px;
             max-height: 400px;
             background: #8B6B4A;
-            /* Inner dark background for empty space */
             border: 2px solid #8B6B4A;
-            /* Balance the outer gap with the inner tile gaps */
             box-sizing: content-box;
             border-radius: 4px;
             overflow: hidden;
@@ -142,7 +141,10 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
         .install-btn-wrapper {
             position: relative;
             width: 70%; max-width: 260px;
-            height: 12vh; min-height: 60px;
+            height: auto;
+            min-height: 60px;
+            max-height: 12vh;
+            aspect-ratio: 3/1;
             cursor: pointer;
             filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.3));
             animation: pulse 1.2s infinite alternate;
@@ -280,16 +282,6 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
         }
 
         /* --- Responsive rules for many phones / orientations --- */
-        @media (max-aspect-ratio: 3/4) {
-            /* Very tall and narrow screens (e.g. Galaxy Z Fold outer screen) */
-            #board-container {
-                width: 90vw;
-                height: 90vw;
-            }
-            .header-img {
-                max-width: 90%;
-            }
-        }
 
         @media (orientation: landscape) and (max-height: 600px) {
             /* Landscape mode on phones */
