@@ -55,10 +55,11 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
             max-height: 8vh;
             object-fit: contain;
             margin-bottom: 5px;
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
             display: block;
             margin-left: auto;
             margin-right: auto;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
 
         /* Header */
@@ -67,8 +68,10 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
             height: auto;
             max-height: 20vh;
             object-fit: contain;
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+            /* REMOVED drop-shadow to fix Safari lag when animating */
             animation: float 3s ease-in-out infinite;
+            will-change: transform;
+            -webkit-transform: translateZ(0);
         }
 
         @keyframes float {
@@ -116,6 +119,9 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
             transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
             cursor: pointer;
             touch-action: none;
+            will-change: transform; /* Fix Safari Lag */
+            transform: translateZ(0); /* Force GPU Acceleration */
+            -webkit-transform: translateZ(0);
         }
 
         .tile-inner {
@@ -148,12 +154,14 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
             max-height: 10vh;
             aspect-ratio: 3/1;
             cursor: pointer;
-            filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.3));
+            /* REMOVED drop-shadow to fix Safari lag when animating */
             animation: pulse 1.2s infinite alternate;
             transition: transform 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
+            will-change: transform;
+            -webkit-transform: translateZ(0);
         }
 
         .install-btn-wrapper:active {
@@ -312,10 +320,11 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
             max-height: 8vh;
             object-fit: contain;
             margin-bottom: 5px;
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
             display: block;
             margin-left: auto;
             margin-right: auto;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
         }
     </style>
