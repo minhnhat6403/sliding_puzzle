@@ -43,14 +43,16 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-evenly;
+            justify-content: center;
+            gap: 2.5vh;
             padding: 20px 15px;
         }
 
                 /* Logo Name */
         .logo-name-img {
-            max-width: 70%;
-            max-height: 12vh;
+            max-width: 45%;
+            height: auto;
+            max-height: 8vh;
             object-fit: contain;
             margin-bottom: 5px;
             filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
@@ -90,15 +92,15 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
             border-radius: 12px;
             padding: 10px;
             box-shadow: 0 12px 0 #A0825B, 0 16px 15px rgba(0, 0, 0, 0.2);
-            margin: 10px 0;
+            margin: 0;
         }
 
         #board-container {
             position: relative;
-            width: min(90vw, 45vh);
-            height: min(90vw, 45vh);
-            max-width: 400px;
-            max-height: 400px;
+            width: min(80vw, 40vh);
+            height: min(80vw, 40vh);
+            max-width: 320px;
+            max-height: 320px;
             background: #8B6B4A;
             border: 2px solid #8B6B4A;
             box-sizing: content-box;
@@ -140,10 +142,10 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
         /* Install Button */
         .install-btn-wrapper {
             position: relative;
-            width: 70%; max-width: 260px;
+            width: 55%; max-width: 200px;
             height: auto;
-            min-height: 60px;
-            max-height: 12vh;
+            min-height: 50px;
+            max-height: 10vh;
             aspect-ratio: 3/1;
             cursor: pointer;
             filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.3));
@@ -305,8 +307,16 @@ window.animationsData = {"celebration_confetti":{"v":"5.9.0","fr":30,"ip":0,"op"
                 height: 15vh;
             }
             .logo-name-img {
-                max-width: 15vw;
-            }
+            max-width: 45%;
+            height: auto;
+            max-height: 8vh;
+            object-fit: contain;
+            margin-bottom: 5px;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
         }
     </style>
 </head>
